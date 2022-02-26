@@ -30,8 +30,8 @@
     ]
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "TSOpenAPIElectron",
+    "appId": "org.erb.TSOpenAPIElectron",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -89,38 +89,27 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
+      "owner": "ts-openapi",
+      "repo": "ts-openapi-electron"
     }
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron-react-boilerplate/electron-react-boilerplate.git"
+    "url": "git+https://github.com/ts-openapi/ts-openapi-electron.git"
   },
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://electron-react-boilerplate.js.org"
+    "name": "Matthew Stewart",
+    "email": "mattcodenow@gmail.com",
+    "url": "matthewstewart.io"
   },
-  "contributors": [
-    {
-      "name": "Amila Welihinda",
-      "email": "amilajack@gmail.com",
-      "url": "https://github.com/amilajack"
-    },
-    {
-      "name": "John Tran",
-      "email": "jptran318@gmail.com",
-      "url": "https://github.com/jooohhn"
-    }
-  ],
   "license": "WTFPL",
   "bugs": {
-    "url": "https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues"
+    "url": "https://github.com/ts-openapi/ts-openapi-electron/issues"
   },
   "keywords": [
     "electron",
-    "boilerplate",
+    "openapi",
+    "swagger",
     "react",
     "typescript",
     "ts",
@@ -228,6 +217,7 @@
   "dependencies": {
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.4",
+    "electron-store": "^8.0.1",
     "electron-updater": "^4.6.5",
     "history": "^5.2.0",
     "react": "^17.0.2",
@@ -237,9 +227,6 @@
   "devEngines": {
     "node": ">=14.x",
     "npm": ">=7.x"
-  },
-  "collective": {
-    "url": "https://opencollective.com/electron-react-boilerplate-594"
   },
   "browserslist": [],
   "prettier": {
