@@ -1,6 +1,6 @@
 {
-  "name": "electron-react-boilerplate",
-  "description": "A foundation for scalable desktop apps",
+  "name": "ts-openapi-electron",
+  "description": "A utility desktop application for TypeScript projects using OpenAPI or Swagger specifications.",
   "scripts": {
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
     "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.prod.ts",
@@ -114,7 +114,7 @@
       "url": "https://github.com/jooohhn"
     }
   ],
-  "license": "MIT",
+  "license": "WTFPL",
   "bugs": {
     "url": "https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues"
   },
@@ -129,7 +129,7 @@
     "hot",
     "reload"
   ],
-  "homepage": "https://github.com/electron-react-boilerplate/electron-react-boilerplate#readme",
+  "homepage": "https://github.com/ts-openapi/ts-openapi-electron#readme",
   "jest": {
     "testURL": "http://localhost/",
     "testEnvironment": "jsdom",
