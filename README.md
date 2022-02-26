@@ -9,6 +9,14 @@ npm install
 ```
 
 ## Run
+Run a local development version of the application.
 ```bash
 npm start
+```
+
+## Package
+Package the application into a distributable installer.  
+Outputs both .zip and OS specific installer to `/release/build/`.
+```bash
+npm run package
 ```
