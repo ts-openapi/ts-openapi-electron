@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/return-await */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint global-require: off, no-console: off, promise/always-return: off */
 
 /**
@@ -8,8 +11,11 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
+import fs from 'fs';
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import axios from 'axios';
+import yaml from 'js-yaml';
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import Store from 'electron-store';
@@ -28,6 +34,7 @@ let mainWindow: BrowserWindow | null = null;
 
 const store = new Store();
 
+/** Local Storage */
 ipcMain.on('electron-store-get', async (event, val) => {
   event.returnValue = store.get(val);
 });
@@ -35,10 +42,41 @@ ipcMain.on('electron-store-set', async (_, key, val) => {
   store.set(key, val);
 });
 
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
+/** http requests */
+ipcMain.on('http-request', async (event, arg) => {
+  const handler = async (cfg: string) => {
+    const res = await axios(JSON.parse(cfg));
+    return JSON.stringify({
+      data: res.data,
+      status: res.status,
+      statusText: res.statusText,
+      headers: res.headers,
+    });
+  };
+  event.reply('http-request', await handler(arg));
+});
+
+ipcMain.on('file-open', async (event) => {
+  const handler = async () => {
+    const open = await dialog.showOpenDialog(mainWindow!, {
+      properties: ['openFile'],
+      filters: [{ name: 'Swagger', extensions: ['yaml', 'yml', 'json'] }],
+    });
+    if (open.canceled) {
+      return undefined;
+    }
+    const filePath = open.filePaths[0];
+    let parsedContent: any;
+    const ext = path.extname(filePath);
+    if (ext === '.json') {
+      parsedContent = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    }
+    if (ext === '.yml' || ext === '.yaml') {
+      parsedContent = yaml.load(fs.readFileSync(filePath, 'utf-8'));
+    }
+    return JSON.stringify({ path: filePath, content: parsedContent });
+  };
+  event.reply('file-open', await handler());
 });
 
 if (process.env.NODE_ENV === 'production') {

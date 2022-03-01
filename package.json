@@ -100,7 +100,7 @@
   "author": {
     "name": "Matthew Stewart",
     "email": "mattcodenow@gmail.com",
-    "url": "matthewstewart.io"
+    "url": "https://matthewstewart.io"
   },
   "license": "WTFPL",
   "bugs": {
@@ -153,6 +153,7 @@
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@types/jest": "^27.0.3",
+    "@types/js-yaml": "^4.0.5",
     "@types/node": "17.0.5",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
@@ -215,11 +216,13 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
+    "axios": "^0.26.0",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.4",
     "electron-store": "^8.0.1",
     "electron-updater": "^4.6.5",
     "history": "^5.2.0",
+    "js-yaml": "^4.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "^6.2.1"
