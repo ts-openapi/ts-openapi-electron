@@ -1,4 +1,11 @@
 import { render } from 'react-dom';
-import App from './App';
+import { MemoryRouter } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import GlobalRouter from './GlobalRouter';
 
-render(<App />, document.getElementById('root'));
+render(
+  <MemoryRouter>
+    <GlobalRouter />
+  </MemoryRouter>,
+  document.getElementById('root')
+);

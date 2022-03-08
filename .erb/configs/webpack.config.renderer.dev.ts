@@ -40,6 +40,16 @@ if (
 const configuration: webpack.Configuration = {
   devtool: 'inline-source-map',
 
+  resolve: {
+    alias: {
+        process: 'process/browser',
+        stream: 'stream-browserify',
+        zlib: 'browserify-zlib',
+        https: 'https-browserify',
+        http: 'stream-http'
+    }
+  },
+
   mode: 'development',
 
   target: ['web', 'electron-renderer'],
@@ -141,6 +151,10 @@ const configuration: webpack.Configuration = {
       env: process.env.NODE_ENV,
       isDevelopment: process.env.NODE_ENV !== 'production',
       nodeModules: webpackPaths.appNodeModulesPath,
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+      Buffer: ['buffer', 'Buffer'],
     }),
   ],
 

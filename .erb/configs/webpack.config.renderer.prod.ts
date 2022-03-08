@@ -28,6 +28,14 @@ const devtoolsConfig =
 const configuration: webpack.Configuration = {
   ...devtoolsConfig,
 
+  resolve: {
+    alias: {
+        process: 'process/browser',
+        stream: "stream-browserify",
+        zlib: "browserify-zlib"
+    }
+  },
+
   mode: 'production',
 
   target: ['web', 'electron-renderer'],
@@ -122,6 +130,10 @@ const configuration: webpack.Configuration = {
       },
       isBrowser: false,
       isDevelopment: process.env.NODE_ENV !== 'production',
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+      Buffer: ['buffer', 'Buffer'],
     }),
   ],
 };

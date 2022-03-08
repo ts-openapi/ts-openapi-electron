@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-redeclare */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/return-await */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -19,6 +22,10 @@ import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import Store from 'electron-store';
+import SwaggerParser from '@apidevtools/swagger-parser';
+// import { generateTypesForDocument } from 'openapi-client-axios-typegen';
+// import { Project, ScriptTarget } from 'ts-morph';
+import { OpenAPIV2, OpenAPIV3 } from 'openapi-types';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -35,15 +42,15 @@ let mainWindow: BrowserWindow | null = null;
 const store = new Store();
 
 /** Local Storage */
-ipcMain.on('electron-store-get', async (event, val) => {
+ipcMain.on('store-get', async (event, val) => {
   event.returnValue = store.get(val);
 });
-ipcMain.on('electron-store-set', async (_, key, val) => {
+ipcMain.on('store-set', async (_, key, val) => {
   store.set(key, val);
 });
 
 /** http requests */
-ipcMain.on('http-request', async (event, arg) => {
+ipcMain.on('axios-request', async (event, arg) => {
   const handler = async (cfg: string) => {
     const res = await axios(JSON.parse(cfg));
     return JSON.stringify({
@@ -53,10 +60,10 @@ ipcMain.on('http-request', async (event, arg) => {
       headers: res.headers,
     });
   };
-  event.reply('http-request', await handler(arg));
+  event.reply('axios-request', await handler(arg));
 });
 
-ipcMain.on('file-open', async (event) => {
+ipcMain.on('open-spec-file', async (event) => {
   const handler = async () => {
     const open = await dialog.showOpenDialog(mainWindow!, {
       properties: ['openFile'],
@@ -66,17 +73,67 @@ ipcMain.on('file-open', async (event) => {
       return undefined;
     }
     const filePath = open.filePaths[0];
-    let parsedContent: any;
+    let parsedContent: OpenAPIV3.Document | OpenAPIV2.Document;
     const ext = path.extname(filePath);
     if (ext === '.json') {
-      parsedContent = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+      parsedContent = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as
+        | OpenAPIV3.Document
+        | OpenAPIV2.Document;
     }
     if (ext === '.yml' || ext === '.yaml') {
-      parsedContent = yaml.load(fs.readFileSync(filePath, 'utf-8'));
+      parsedContent = yaml.load(fs.readFileSync(filePath, 'utf-8')) as
+        | OpenAPIV3.Document
+        | OpenAPIV2.Document;
     }
-    return JSON.stringify({ path: filePath, content: parsedContent });
+    const parser = new SwaggerParser();
+    const parserOptions: SwaggerParser.Options = {
+      dereference: {
+        circular: true,
+      },
+      validate: { schema: false },
+      resolve: {
+        external: false,
+        http: false,
+        file: true,
+      },
+    };
+    parsedContent = (await parser.validate(parsedContent!, parserOptions)) as
+      | OpenAPIV2.Document
+      | OpenAPIV3.Document;
+    console.log(parsedContent);
+    // const types = parsedContent?.swagger
+    //   ? (
+    //       await generateTypesForDocument(parsedContent, {
+    //         transformOperationName: (str: string) => str,
+    //       })
+    //     ).join('\n')
+    //   : null;
+    // console.log(types);
+    // const project = new Project({
+    //   compilerOptions: {
+    //     target: ScriptTarget.ES3,
+    //   },
+    // });
+    // const sourceFile = project.createSourceFile('__tempfile__.ts', types);
+    // const interfaceArr: InterfaceDeclaration[] = sourceFile.getInterfaces();
+    // const declarationsArr: string[] = [];
+    // for (const interfaceDeclaration of interfaceArr) {
+    //   const txt = interfaceDeclaration.getText();
+    //   declarationsArr.push(txt);
+    // }
+    // const declarations = sourceFile
+    //   .getInterfaces()
+    //   .map((intf) => intf.findReferencesAsNodes());
+    // const parsedTypes = declarations[0].map((decl) => decl.print());
+    // do things with source file
+    // sourceFile.delete();
+    return JSON.stringify({
+      path: filePath,
+      content: parsedContent,
+      // types: parsedTypes,
+    });
   };
-  event.reply('file-open', await handler());
+  event.reply('open-spec-file', await handler());
 });
 
 if (process.env.NODE_ENV === 'production') {
